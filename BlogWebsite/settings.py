@@ -37,8 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main',
-    'main.apps.MainConfig',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +117,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login/'
-
+# Redirects for authentication system
+LOGIN_URL = '/login/'             # If user tries visiting protected page
+LOGIN_REDIRECT_URL = '/'          # After successful login → homepage
+LOGOUT_REDIRECT_URL = '/login/'   # After logout → back to login
