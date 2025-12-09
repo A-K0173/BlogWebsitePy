@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('home.urls')), # Home app for home page
     path('', include('accounts.urls')), # Accounts app for authentication and logout
     path('blog/', include('blog.urls')),
+    path('profile/', include('a_profile.urls')), # Profile app for user profiles
 ]
