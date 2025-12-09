@@ -22,4 +22,6 @@ urlpatterns = [
 
     # This loads all urls from accounts/urls.py
     path('', include('accounts.urls')),
+
+    path('blog/', include('blog.urls')),
 ]
