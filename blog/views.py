@@ -89,8 +89,8 @@ def update_post(request, pk):
     """Update an existing post"""
     post = get_object_or_404(Post, pk=pk)
     
-    # Check if user owns the post
-    if post.author != request.user:
+    # Check if user owns the post or is admin
+    if post.author != request.user and not request.user.is_staff:
         return redirect('post_detail', pk=pk)
     
     if request.method == 'POST':
@@ -108,8 +108,8 @@ def delete_post(request, pk):
     """Delete a post"""
     post = get_object_or_404(Post, pk=pk)
     
-    # Check if user owns the post
-    if post.author != request.user:
+    # Check if user owns the post or is admin
+    if post.author != request.user and not request.user.is_staff:
         return redirect('post_detail', pk=pk)
     
     if request.method == 'POST':

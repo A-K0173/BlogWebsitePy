@@ -1,4 +1,5 @@
 {% extends 'home/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="row">
@@ -26,7 +27,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <small class="text-muted">
-                            By <a href="?user={{ post.author.username }}">{{ post.author.username }}</a>
+                            By <a href="{% url 'profile' post.author.id %}">{{ post.author.username }}</a>
                             on {{ post.created_at|date:"M d, Y" }}
                         </small>
                     </div>
