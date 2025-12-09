@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegisterForm
 
@@ -24,7 +23,7 @@ def login_view(request):
         else:
             messages.error(request, "Invalid username or password.")
 
-    # IMPORTANT: ALWAYS RETURN THIS FOR GET REQUESTS
+    # Make sure to return for get request or failed login
     return render(request, "accounts/login.html")
 
 
@@ -35,7 +34,10 @@ def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
+            # Create user but don't save password yet
             user = form.save(commit=False)
+
+            # Set the password properly
             user.set_password(form.cleaned_data["password"])
             user.save()
             return redirect("login")

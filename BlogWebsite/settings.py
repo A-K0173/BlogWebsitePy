@@ -126,5 +126,5 @@ STATIC_URL = 'static/'
 
 # Redirects for authentication system
 LOGIN_URL = '/login/'             # If user tries visiting protected page
-LOGIN_REDIRECT_URL = '/'          # After successful login → homepage
-LOGOUT_REDIRECT_URL = '/login/'   # After logout → back to login
+LOGIN_REDIRECT_URL = '/'          # After successful login > homepage
+LOGOUT_REDIRECT_URL = '/login/'   # After logout > back to login
