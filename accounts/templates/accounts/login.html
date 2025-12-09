@@ -1,3 +1,7 @@
+{% extends 'home/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
 <h2>Login</h2>
 
 {% if error %}
@@ -16,3 +20,4 @@
 </form>
 
 <p>Dont' have an account? <a href="/register/">Register here</a></p>
+{% endblock %}

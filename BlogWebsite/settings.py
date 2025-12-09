@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'accounts',
     'blog',
     'home',
+    'crispy_forms',
+    'crispy_bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -53,6 +55,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'BlogWebsite.urls'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 TEMPLATES = [
     {
