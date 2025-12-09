@@ -1,0 +1,57 @@
+{% extends 'home/base.html' %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+{% block content %}
+<html>
+<head>
+    <title>Post Details</title>
+    <style>
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .meta { color: #888; font-size: 0.9em; }
+        .actions { margin-top: 20px; }
+        .comments { margin-top: 30px; }
+        .comment { border-top: 1px solid #eee; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="header">
+            <h1>{{ post.title }}</h1>
+            <span class="meta">by <a href="{% url 'profile' post.author.id %}">{{ post.author.username }}</a> on {{ post.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <p>{{ post.content }}</p>
+        <div class="actions mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="badge bg-info">{{ post.likes_count }} Likes</span>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'like_post' post.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-primary">{% if liked %}Unlike{% else %}Like{% endif %}</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        <div class="comments">
+            <h3>Comments ({{ post.comments_count }})</h3>
+            {% for comment in comments %}
+                <div class="comment">
+                    <strong><a href="{% url 'profile' comment.user.id %}">{{ comment.user.username }}</a></strong>:
+                    {{ comment.content }}
+                    <span class="meta">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_comment' post.pk %}">
+                    {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <button type="submit" class="btn btn-primary">Comment</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

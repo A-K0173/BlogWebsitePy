@@ -49,6 +49,7 @@ def post_detail(request, pk):
         'comment_form': comment_form
     })
 
+@login_required
 def post_list(request):
     """Show all posts or filtered posts"""
     posts = Post.objects.all().order_by('-created_at')
@@ -151,3 +152,19 @@ def follow_user(request, user_id):
             follow.delete()
     
     return redirect('post_list')
+
+# Add a view for adding a comment to a post
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.post = post
+            comment.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = CommentForm()
+    return render(request, 'blog/add_comment.html', {'form': form, 'post': post})

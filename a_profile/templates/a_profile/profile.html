@@ -1,0 +1,78 @@
+{% extends 'home/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Profile Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1>{{ profile_user.username }}</h1>
+                    <p class="text-muted">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+                    {% if user_profile.description %}
+                        <p>{{ user_profile.description }}</p>
+                    {% else %}
+                        <p class="text-muted">No description yet.</p>
+                    {% endif %}
+                    
+                    {% if is_own_profile %}
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- User's Posts -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>{{ profile_user.username }}'s Posts ({{ user_posts.count }})</h5>
+                </div>
+                <div class="card-body">
+                    {% for post in user_posts %}
+                        <div class="mb-3">
+                            <h6><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h6>
+                            <p class="text-muted small">{{ post.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No posts yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Posts User Liked -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Posts {{ profile_user.username }} Liked ({{ liked_posts.count }})</h5>
+                </div>
+                <div class="card-body">
+                    {% for post in liked_posts %}
+                        <div class="mb-3">
+                            <h6><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h6>
+                            <p class="text-muted small">by {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No liked posts yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Posts User Commented On -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Posts {{ profile_user.username }} Commented On ({{ commented_posts.count }})</h5>
+                </div>
+                <div class="card-body">
+                    {% for post in commented_posts %}
+                        <div class="mb-3">
+                            <h6><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h6>
+                            <p class="text-muted small">by {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No commented posts yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

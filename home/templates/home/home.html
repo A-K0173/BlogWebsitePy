@@ -1,4 +1,8 @@
+{% extends 'home/base.html' %}
+{% load crispy_forms_tags %}
+
 <!DOCTYPE html>
+{% block content %}
 <html>
 <head>
     <title>Home</title>
@@ -12,19 +16,13 @@
 <body>
     <div class="header">
         <div>
-            <h1>placeholder</h1>
-            <h2>placeholder2</h2>
-        </div>
-        <div class="buttons">
+            <h1>Awesome Blog Site</h1>
             {% if user.is_authenticated %}
-                <a href="{% url 'home_feed' %}">My Feed</a>
-                <a href="{% url 'create_post' %}">Create Post</a>
-                <a href="{% url 'post_list' %}">All Posts</a>
-                <a href="{% url 'logout' %}">Logout ({{ user.username }})</a>
+                <p>Welcome, {{ user.username }}!</p>
             {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Register</a>
+                <p>Welcome! You must register or log in to create and see blog posts.</p>
             {% endif %}
+            <h2>Make some blogs, comment on blogs, like some blogs, see some blogs.</h2>
         </div>
     </div>
     <div class="main">
@@ -40,3 +38,4 @@
     </div>
 </body>
 </html>
+{% endblock %}
