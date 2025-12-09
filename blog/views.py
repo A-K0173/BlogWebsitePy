@@ -168,3 +168,22 @@ def add_comment(request, pk):
     else:
         form = CommentForm()
     return render(request, 'blog/add_comment.html', {'form': form, 'post': post})
+
+@login_required
+def home_feed(request):
+    """Show posts from users that the current user follows"""
+    # Get IDs of users that current user follows
+    following_ids = Follow.objects.filter(
+        follower=request.user
+    ).values_list('followed_id', flat=True)
+    
+    # Include current user's posts too
+    user_ids = list(following_ids) + [request.user.id]
+    
+    # Get posts from followed users, ordered by most recent
+    posts = Post.objects.filter(author_id__in=user_ids).order_by('-created_at')
+    
+    return render(request, 'blog/feed.html', {
+        'posts': posts,
+        'following_count': following_ids.count()
+    })

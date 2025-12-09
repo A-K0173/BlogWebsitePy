@@ -16,32 +16,59 @@
         </form>
 
         {% for post in posts %}
-        <div class="card post-card">
-            <div class="card-body">
-                <h5 class="card-title">
-                    <a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">
-                        {{ post.title }}
-                    </a>
-                </h5>
-                <p class="card-text">{{ post.content|truncatewords:50 }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">
+                            {{ post.title }}
+                        </a>
+                    </h4>
+                    <div class="mb-3">
                         <small class="text-muted">
-                            By <a href="{% url 'profile' post.author.id %}">{{ post.author.username }}</a>
-                            on {{ post.created_at|date:"M d, Y" }}
+                            By <a href="{% url 'profile' user_id=post.author.id %}">
+                                {{ post.author.username }}
+                            </a>
+                            • {{ post.created_at|timesince }} ago
                         </small>
                     </div>
-                    <div>
-                        <span class="badge bg-primary">Likes: {{ post.likes_count }}</span>
-                        <span class="badge bg-secondary">Comments: {{ post.comments_count }}</span>
+                    <p class="card-text">{{ post.content|truncatewords:200 }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <a href="{% url 'post_detail' pk=post.pk %}" 
+                                class="btn btn-sm btn-outline-primary">
+                                {{ post.comments_count }} comment{{ post.comments_count|pluralize }}
+                            </a>
+                            <form method="post" action="{% url 'like_post' post.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    {{ post.likes_count }} like{{ post.likes_count|pluralize }}
+                                </button>
+                            </form>
+                        </div>
+                        {% if post.author == request.user %}
+                            <div>
+                                <a href="{% url 'update_post' pk=post.pk %}" 
+                                    class="btn btn-sm btn-primary">
+                                    Edit
+                                </a>
+                                <form method="post" action="{% url 'delete_post' post.pk %}" 
+                                        class="d-inline" 
+                                        onsubmit="return confirm('Are you sure you want to delete this post?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-        </div>
         {% empty %}
-        <div class="alert alert-info">
-            No posts found. {% if user.is_authenticated %}<a href="{% url 'create_post' %}">Create one!</a>{% endif %}
-        </div>
+            <div class="alert alert-warning">
+                <h5>No posts created yet!</h5>
+                <p>Start following users or create your own posts to see them here.</p>
+                <a href="{% url 'create_post' %}" class="btn btn-primary">Create Your First Post</a>
+            </div>
         {% endfor %}
     </div>
     

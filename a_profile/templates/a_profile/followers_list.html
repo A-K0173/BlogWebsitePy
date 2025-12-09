@@ -1,0 +1,43 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>{{ user.username }}'s Followers ({{ followers.count }})</h4>
+                    <a href="{% url 'profile' user_id=user.id %}" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Back to Profile
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% for follow in followers %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                            <div>
+                                <a href="{% url 'profile' user_id=follow.follower.id %}" 
+                                   class="text-decoration-none fw-bold">
+                                    {{ follow.follower.username }}
+                                </a>
+                                <br>
+                                <small class="text-muted">Started following {{ follow.created_at|timesince }} ago</small>
+                            </div>
+                            {% if user != request.user %}
+                                <div>
+                                    {% if follow.follower != request.user %}
+                                        {% with is_following=request.user.profile.is_following_user %}
+                                            <!-- You could add a follow button here if needed -->
+                                        {% endwith %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p class="text-muted text-center">No followers yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

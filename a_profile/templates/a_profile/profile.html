@@ -4,34 +4,161 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row">
-        <div class="col-md-8">
-            <!-- Profile Header -->
+        <div class="col-md-4">
+            <!-- Profile Sidebar -->
             <div class="card mb-4">
-                <div class="card-body">
-                    <h1>{{ profile_user.username }}</h1>
-                    <p class="text-muted">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+                <div class="card-body text-center">
+                    <h3>{{ profile_user.username }}</h3>
+                    <p class="text-muted">
+                        {{ profile_user.first_name }} {{ profile_user.last_name }}
+                        {% if profile_user.email %}
+                            <br><small>{{ profile_user.email }}</small>
+                        {% endif %}
+                    </p>
+                    
                     {% if user_profile.description %}
-                        <p>{{ user_profile.description }}</p>
+                        <p class="mt-3">{{ user_profile.description }}</p>
                     {% else %}
-                        <p class="text-muted">No description yet.</p>
+                        <p class="text-muted mt-3">No description yet.</p>
+                    {% endif %}
+                    
+                    <!-- Follow/Unfollow Button -->
+                    {% if user.is_authenticated and not is_own_profile %}
+                        <form method="POST" action="{% url 'follow_toggle' user_id=profile_user.id %}" class="mt-3">
+                            {% csrf_token %}
+                            {% if is_following %}
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Unfollow
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Follow
+                                </button>
+                            {% endif %}
+                        </form>
                     {% endif %}
                     
                     {% if is_own_profile %}
-                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary btn-sm mt-3">
+                            Edit Profile
+                        </a>
                     {% endif %}
                 </div>
             </div>
             
-            <!-- User's Posts -->
+            <!-- Follow Stats -->
             <div class="card mb-4">
                 <div class="card-header">
+                    <h5>Follow Stats</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Followers Section -->
+                    <div class="mb-3">
+                        <h6>
+                            Followers: {{ followers_count }}
+                            <button class="btn btn-link btn-sm" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#followersCollapse" aria-expanded="false" 
+                                    aria-controls="followersCollapse">
+                                <small>Show/Hide</small>
+                            </button>
+                        </h6>
+                        <div class="collapse" id="followersCollapse">
+                            <div class="card card-body">
+                                {% for follow in followers %}
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <a href="{% url 'profile' user_id=follow.follower.id %}" 
+                                           class="text-decoration-none">
+                                            {{ follow.follower.username }}
+                                        </a>
+                                        <small class="text-muted">{{ follow.created_at|timesince }} ago</small>
+                                    </div>
+                                {% empty %}
+                                    <p class="text-muted">No followers yet.</p>
+                                {% endfor %}
+                                {% if followers_count > 10 %}
+                                    <a href="{% url 'followers_list' user_id=profile_user.id %}" 
+                                       class="btn btn-sm btn-outline-primary mt-2">
+                                        View All Followers
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Following Section -->
+                    <div>
+                        <h6>
+                            Following: {{ following_count }}
+                            <button class="btn btn-link btn-sm" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#followingCollapse" aria-expanded="false" 
+                                    aria-controls="followingCollapse">
+                                <small>Show/Hide</small>
+                            </button>
+                        </h6>
+                        <div class="collapse" id="followingCollapse">
+                            <div class="card card-body">
+                                {% for follow in following %}
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <a href="{% url 'profile' user_id=follow.followed.id %}" 
+                                           class="text-decoration-none">
+                                            {{ follow.followed.username }}
+                                        </a>
+                                        <small class="text-muted">{{ follow.created_at|timesince }} ago</small>
+                                    </div>
+                                {% empty %}
+                                    <p class="text-muted">Not following anyone yet.</p>
+                                {% endfor %}
+                                {% if following_count > 10 %}
+                                    <a href="{% url 'following_list' user_id=profile_user.id %}" 
+                                       class="btn btn-sm btn-outline-primary mt-2">
+                                        View All Following
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- User's Posts -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>{{ profile_user.username }}'s Posts ({{ user_posts.count }})</h5>
+                    {% if is_own_profile %}
+                        <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm">
+                            New Post
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% for post in user_posts %}
-                        <div class="mb-3">
-                            <h6><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h6>
-                            <p class="text-muted small">{{ post.created_at|date:"M d, Y H:i" }}</p>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">
+                                        {{ post.title }}
+                                    </a>
+                                </h5>
+                                <p class="card-text">{{ post.content|truncatewords:100 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        Posted {{ post.created_at|timesince }} ago
+                                        {% if post.updated_at != post.created_at %}
+                                            • Updated {{ post.updated_at|timesince }} ago
+                                        {% endif %}
+                                    </small>
+                                    <div>
+                                        <span class="badge bg-primary">
+                                            Likes: {{ post.likes_count }}
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            Comments: {{ post.comments_count }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     {% empty %}
                         <p class="text-muted">No posts yet.</p>
@@ -46,9 +173,16 @@
                 </div>
                 <div class="card-body">
                     {% for post in liked_posts %}
-                        <div class="mb-3">
-                            <h6><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h6>
-                            <p class="text-muted small">by {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</p>
+                        <div class="mb-3 border-bottom pb-3">
+                            <h6>
+                                <a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">
+                                    {{ post.title }}
+                                </a>
+                            </h6>
+                            <p class="text-muted small">
+                                by <a href="{% url 'profile' user_id=post.author.id %}">{{ post.author.username }}</a> 
+                                • {{ post.created_at|date:"M d, Y" }}
+                            </p>
                         </div>
                     {% empty %}
                         <p class="text-muted">No liked posts yet.</p>
@@ -63,9 +197,16 @@
                 </div>
                 <div class="card-body">
                     {% for post in commented_posts %}
-                        <div class="mb-3">
-                            <h6><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h6>
-                            <p class="text-muted small">by {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</p>
+                        <div class="mb-3 border-bottom pb-3">
+                            <h6>
+                                <a href="{% url 'post_detail' pk=post.pk %}" class="text-decoration-none">
+                                    {{ post.title }}
+                                </a>
+                            </h6>
+                            <p class="text-muted small">
+                                by <a href="{% url 'profile' user_id=post.author.id %}">{{ post.author.username }}</a> 
+                                • {{ post.created_at|date:"M d, Y" }}
+                            </p>
                         </div>
                     {% empty %}
                         <p class="text-muted">No commented posts yet.</p>
