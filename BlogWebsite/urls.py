@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # This loads all urls from accounts/urls.py
-    path('', include('accounts.urls')),
+    path('', include('home.urls')), # Home app for home page
+    path('', include('accounts.urls')), # Accounts app for authentication and logout
 ]

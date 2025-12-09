@@ -51,7 +51,4 @@ def logout_view(request):
     return redirect("login")
 
 
-@login_required
-def home_view(request):
-    """Homepage shown only to logged-in users."""
-    return render(request, "accounts/home.html")
+
