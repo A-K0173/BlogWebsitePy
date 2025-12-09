@@ -46,7 +46,7 @@
                                 </button>
                             </form>
                         </div>
-                        {% if post.author == request.user %}
+                        {% if post.author == request.user or user.is_staff%}
                             <div>
                                 <a href="{% url 'update_post' pk=post.pk %}" 
                                     class="btn btn-sm btn-primary">
